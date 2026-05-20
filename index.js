@@ -23,7 +23,7 @@ app.post("/signup", async (req, res) => {
 
 // const response = await pool.query(`INSERT INTO users (username, password, email) VALUES ('${username}', '${password}', '${email}')RETURNING id`);
 // since above template is also vulnerable to SQL injection so we'll use template below
-const response = await pool.query(`INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id:`, [username, email, hashedPassword]);
+const response = await pool.query(`INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id`, [username, email, hashedPassword]);
 console.log(response);
 
   res.json({

@@ -1,6 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const {Pool} = require("pg");
+const bcrypt = require("bcrypt");
 const pool = new Pool({
   connectionString: "postgresql://neondb_owner:npg_KuyPWHbFi63N@ep-long-hill-ap5qj9vx-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 });
@@ -12,13 +13,17 @@ app.post("/signup", async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
+
+  //pass word hashing:
+  const hashedPassword = await bcrypt.hash(password, 10);
+
 // This is a very bad way to do SQL. This Is vulnerable to something called SQL injection.
   // await pool.query("INSERT INTO users (username, email, password) VALUES('" + username + "','" + email + "','" + password + "')");
 // await pool.query(`INSERT INTO users (username, password, email) VALUES ('${username}', '${password}', '${email}')`);
 
 // const response = await pool.query(`INSERT INTO users (username, password, email) VALUES ('${username}', '${password}', '${email}')RETURNING id`);
 // since above template is also vulnerable to SQL injection so we'll use template below
-const response = await pool.query(`INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id:`, [username, email, password]);
+const response = await pool.query(`INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id:`, [username, email, hashedPassword]);
 console.log(response);
 
   res.json({
